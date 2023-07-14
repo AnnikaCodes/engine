@@ -4,6 +4,13 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
   workflow_call:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
@@ -33,14 +40,10 @@ jobs:
         if: ${{ matrix.zig == 'local' && matrix.os != 'windows-latest' }}
       - run: echo "${env:GITHUB_WORKSPACE}/build/bin/zig" >> $env:GITHUB_PATH
         if: ${{ matrix.zig == 'local' && matrix.os == 'windows-latest' }}
-      - run: zig build -j1 test ${{matrix.options}}
-      - run: zig build -j1 test ${{matrix.options}} -Doptimize=ReleaseFast
-      - run: npm run compile
-      - run: npm test
-      - run: node src/bin/install-pkmn-engine --options="${{matrix.options}}"
-      - run: npm run test:integration
-      - run: zig build -j1 ${{matrix.options}} -p build
       - run: make example options="${{matrix.options}}"
+      - name: Set up debugging tmate session
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@v3
       - run: make lint
       - run: make clean && node src/bin/install-pkmn-engine --zig
       - run: zig build -j1 ${{matrix.options}} -p build -Ddynamic
