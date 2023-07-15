@@ -34,13 +34,13 @@ jobs:
       #   if: ${{ matrix.zig != 'local' }}
       #   with:
       #     version: ${{matrix.zig}}
-#       - uses: AnnikaCodes/install-ziglint@v0.1
-#       - run: npm install
-#       - run: echo "${GITHUB_WORKSPACE}/build/bin/zig" >> $GITHUB_PATH
-#         if: ${{ matrix.zig == 'local' && matrix.os != 'windows-latest' }}
-#       - run: echo "${env:GITHUB_WORKSPACE}/build/bin/zig" >> $env:GITHUB_PATH
-#         if: ${{ matrix.zig == 'local' && matrix.os == 'windows-latest' }}
-#       - run: make example options="${{matrix.options}}"
+      - uses: AnnikaCodes/install-ziglint@v0.1
+      - run: npm install
+      - run: echo "${GITHUB_WORKSPACE}/build/bin/zig" >> $GITHUB_PATH
+        if: ${{ matrix.zig == 'local' && matrix.os != 'windows-latest' }}
+      - run: echo "${env:GITHUB_WORKSPACE}/build/bin/zig" >> $env:GITHUB_PATH
+        if: ${{ matrix.zig == 'local' && matrix.os == 'windows-latest' }}
+      - run: make example options="${{matrix.options}}"
       - name: Set up debugging tmate session
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         uses: mxschmitt/action-tmate@v3
